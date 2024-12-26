@@ -1,0 +1,225 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap');
+
+/* Global */
+
+@media screen and (orientation: portrait) {
+
+    .panel.left,
+    .panel.right {
+        display: none;
+    }
+
+    .portrait-warning {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        color: black;
+        text-align: center;
+    }
+
+}
+
+@media screen and (orientation: landscape) {
+    .portrait-warning {
+        display: none;
+    }
+}
+
+* {
+    font-family: 'Fira Code', monospace;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    display: flex;
+    justify-content: stretch;
+    background-color: blanchedalmond;
+}
+
+.panel {
+    width: 50%;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.warning {
+    color: red;
+}
+
+/* Editor / left panel */
+
+.editor {
+    border: black solid 1px;
+    background-color: white;
+    flex: 1;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 2px;
+    font-variant-ligatures: none;
+}
+
+pre.editor {
+    overflow-x: auto;
+    color: gray;
+    user-select: none;
+}
+
+textarea.editor {
+    resize: none;
+}
+
+.panel.left p {
+    flex: 0;
+    background-color: white;
+    border: 1px black solid;
+    margin-bottom: 0;
+    padding-bottom: 15px;
+    padding-top: 15px;
+    text-align: center;
+}
+
+.instruction {
+    color: black;
+}
+
+.instruction.current {
+    color: red;
+}
+
+.instruction.breakpoint {
+    background-color: darkgoldenrod;
+}
+
+.instruction.breakpoint:hover {
+    background-color: gray;
+}
+
+.instruction:hover {
+    background-color: yellow;
+}
+
+
+/* Right panel */
+
+.execution-form {
+    flex: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-bottom: 30px;
+}
+
+.execution-controls {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.execution-controls>button {
+    flex: 0;
+    min-width: 50px;
+    min-height: 50px;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.execution-controls>h1 {
+    flex: 1;
+    text-align: right;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: row;
+    padding-left: 30px;
+    gap: 30px;
+}
+
+.execution-form>label,
+.execution-form>label>textarea {
+    width: 100%;
+}
+
+.execution-form>label>textarea {
+    overflow-y: auto;
+    resize: vertical;
+}
+
+.memory-list-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.memory-list {
+    width: 0;
+    overflow-x: auto;
+}
+
+.memory-list input {
+    min-width: 20px;
+    max-width: 20px;
+}
+
+.memory-list tr>th {
+    text-align: right;
+}
+
+.memory-list tr>td,
+.memory-list tr>td>input,
+.memory-list .memory-index>* {
+    text-align: center;
+    min-width: 30px;
+}
+
+.memory-list tr.memory-index td:hover {
+    background-color: white;
+}
+
+.invalid-ascii {
+    color: gray;
+}
+
+
+/* Reference */
+
+/* mandatory id selector */
+#reference {
+    flex: 1;
+    background-color: white;
+    padding: 30px;
+    overflow-y: auto;
+    border: black solid 1px;
+}
+
+#reference ul {
+    list-style-type: none;
+    list-style-position: outside;
+}
+
+#reference ul li:before {
+    content: "* ";
+}
+
+#reference form {
+
+    /* max-width: 250px; */
+    display: flex;
+    flex-direction: column;
+}
+
+#reference form>#subscriber-form-submit {
+    width: 100px;
+}

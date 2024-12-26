@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset='utf-8'>
+    <title>BF Debugger v1</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+</head>
+
+<body>
+
+    <div class="portrait-warning">
+        <span>This site will not work in portrait mode.</span>
+    </div>
+
+    <!-- Main code editor -->
+    <main class="panel left">
+        <textarea class="editor" id="editor"></textarea>
+        <pre class="editor" style="display: none;" id="readonly-editor"></pre>
+        <p style="display: none;" id="syntax-error" class="warning"></p>
+    </main>
+
+    <!-- Right column -->
+    <div class="panel right">
+
+        <!-- Controls -->
+        <form class="execution-form" id="the-form">
+            <div class="execution-controls">
+                <button id="button-start">Start</button>
+                <button id="button-step">Step</button>
+                <button id="button-continue" disabled>Cont</button>
+                <div class="radio-group">
+                    <label>
+                        Text
+                        <input type="radio" value="text" name="display-system" id="radio-text" checked disabled>
+                    </label>
+                    <label>
+                        Decimal
+                        <input type="radio" value="decimal" name="display-system" id="radio-decimal" disabled>
+                    </label>
+                    <label>
+                        Hex
+                        <input type="radio" value="hex" name="display-system" id="radio-hex" disabled>
+                    </label>
+                </div>
+
+                <h1>BrainFunk Debugger V1</h1>
+            </div>
+
+            <label>
+                Standard input
+                <textarea id="input-stdin" wrap="soft"></textarea>
+            </label>
+
+            <label>
+                Standard output
+                <textarea id="input-stdout" wrap="soft" readonly></textarea>
+            </label>
+
+            <!-- memory -->
+            <div class="memory-list-container">
+                <table class="memory-list" id="memory-list">
+                    <tr class="memory-index">
+                        <th>#</th>
+                        <td>0</td>
+                        <td>[1]</td>
+                        <td>2</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <th>ASCII</th>
+                        <td><input type="text"></td>
+                        <td><input type="text"></td>
+                        <td><input type="text"></td>
+                        <td><input type="text"></td>
+                    </tr>
+                    <tr>
+                        <th>HEX</th>
+                        <td><input type="text"></td>
+                        <td><input type="text"></td>
+                        <td><input type="text"></td>
+                        <td><input type="text"></td>
+                    </tr>
+                    <tr>
+                        <th>DEC</th>
+                        <td><input type="text"></td>
+                        <td><input type="text"></td>
+                        <td><input type="text"></td>
+                        <td><input type="text"></td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+
+        <aside class="reference" id="reference">
+            <h2>BrainFunk language</h2>
+            <p>
+                Excerpt from <a id="source" href="https://en.wikipedia.org/wiki/Brainfunk">wikipedia</a>.
+            </p>
+            <p>
+                BrainFunk is an esoteric, imperative, structured, typeless programming language created in 1993 by Swiss
+                student Urban Müller with the name slightly changed. Designed to be extremely minimalistic, the language
+                consists of only eight simple commands, a data pointer, and an instruction pointer.
+            </p>
+
+            <p>
+                BrainFunk is an example of a so-called Turing tarpit: it can be used to write any program, but it is not
+                practical to do so because it provides so little abstraction that the programs get very long or
+                complicated.
+                While BrainFunk is fully Turing-complete, it is not intended for practical use but to challenge and
+                amuse
+                programmers. BrainFunk requires one to break down commands into small and simple instructions.
+            </p>
+
+            <h2>Design</h2>
+
+            <p>
+                The language consists of eight commands. A BrainFunk program is a sequence of these commands, possibly
+                interspersed with other characters (which are ignored). The commands are executed sequentially, with
+                some exceptions: an instruction pointer begins at the first command, and each command it points to is
+                executed, after which it normally moves forward to the next command. The program terminates when the
+                instruction pointer moves past the last command.
+
+                The BrainFunk language uses a simple machine model consisting of the program and instruction pointer, as
+                well as a one-dimensional array of byte cells initialized to zero; a movable data
+                pointer (initialized to point to the leftmost byte of the array); and two streams of bytes for input and
+                output (most often connected to a keyboard and a monitor respectively, and using the ASCII character
+                encoding). Original version specified a constant memory size of 30000, but this implementation relaxes
+                this limitation, memory array starts at length 1 and expands as needed.
+            </p>
+
+            <p>
+                The eight language commands each consist of a single character:
+            </p>
+
+            <table>
+                <tr>
+                    <th>Character</th>
+                    <th>Instruction Performed</th>
+                </tr>
+                <tr>
+                    <td><code>&gt;</code></td>
+                    <td>Increment the data pointer by one (to point to the next cell to the right).</td>
+                </tr>
+                <tr>
+                    <td><code>&lt;</code></td>
+                    <td>Decrement the data pointer by one (to point to the next cell to the left).</td>
+                </tr>
+                <tr>
+                    <td><code>+</code></td>
+                    <td>Increment the byte at the data pointer by one. </td>
+                </tr>
+                <tr>
+                    <td><code>-</code></td>
+                    <td>Decrement the byte at the data pointer by one. </td>
+                </tr>
+                <tr>
+                    <td><code>.</code></td>
+                    <td>Output the byte at the data pointer.</td>
+                </tr>
+                <tr>
+                    <td><code>,</code></td>
+                    <td>Accept one byte of input, storing its value in the byte at the data pointer.</td>
+                </tr>
+                <tr>
+                    <td><code>[</code></td>
+                    <td>If the byte at the data pointer is zero, then instead of moving the instruction pointer forward
+                        to the next command, jump it forward to the command after the matching <code>]</code> command.
+                    </td>
+                </tr>
+                <tr>
+                    <td><code>]</code></td>
+                    <td>If the byte at the data pointer is nonzero, then instead of moving the instruction pointer
+                        forward to the next command, jump it back to the command after the matching <code>[</code>
+                        command.</td>
+                </tr>
+            </table>
+
+            <h2>Features of this debugger</h2>
+
+            <h3>Control buttons</h3>
+            <p>
+                There are 3 buttons: start/stop, step and continue. Start will start running the program, stop will
+                terminated it without further notice. Step will start start debugging the program, but will pause on
+                first instruction. If the program is already running, step will step over instruction by instruction.
+                Continue button will continue the execution, but will pause on next breakpoint.
+            </p>
+
+            <h3>Program window</h3>
+            <p>
+                Program window contains the executing code. All comment symbols are grayed out. Next instruction to be
+                executed is highlighted in red. Any instruction can be clicked to toggle a breakpoint or ctrl-clicked to
+                immediately jump to the instruction.
+            </p>
+
+            <h3>Standard IO</h3>
+            <p>
+                Input fields for standard io are provided, program input and program output. Both can be resized. Output
+                is readonly. Input can be freely written to, when program is paused. Press ctrl+enter to submit text.
+                When the program requests input (using , operator), a single character of input from the beginning of
+                the line is consumed. If no input is available, program will be paused until you input something.
+            </p>
+            <p>
+                There are 3 modes of display for standard IO:
+            </p>
+            <ul>
+                <li>Text: stream is displayed as sequence of ASCII characters.</li>
+                <li>Decimal: stream is displayed as a space-separated sequence of decimal numbers.</li>
+                <li>Hex: stream is displayed as a space-separated sequence of hex numbers. Numbers are padded to 2
+                    symbols.</li>
+            </ul>
+
+            <h3>Memory</h3>
+            <p>
+                Memory contents of the program is displayed. Each column is a single cell. Head position is displayed as
+                square brackets. Header index can be clicked to move the head around.
+            </p>
+            <p>
+                Other 3 rows contain the same data, but in different forms. ASCII tries to interpret data as ASCII
+                characters, but will fail if codepoint is not printable. Hex and decimal will always display correct
+                data. Any of these fields can be edited.
+            </p>
+
+            <h3>Errors</h3>
+            <p>
+                Any runtime errors will be reported. Here is a
+                comprehensive list of all errors:
+            </p>
+
+            <ul>
+                <li>program exceeded 1000000 steps - there is a hard cap of 1 million steps per program</li>
+                <li>head pointer underflow - head pointer was moved leftwards of the 0 index</li>
+                <li>head pointer underflow - head pointer was moved leftwards of the 0 index</li>
+            </ul>
+
+            <p>
+                These errors should be unreachable to the end user, because form data is sanitized:
+            </p>
+
+            <ul>
+                <li>input string is not a single character - operator ',' received more then one character</li>
+                <li>non ascii input - operator ',' received a multi-byte character</li>
+                <li>input number is not a byte - operator ',' received a number that overflows or underflows 8 unsigned
+                    bits
+                </li>
+                <li>out of bounds jump - compiled BF bytecode specifies a jump to unknown address</li>
+                <li>invalid jump - compiled BF bytecode specifies a jump to the current instruction</li>
+            </ul>
+
+            <h2>Mandatory images</h2>
+            <img src="https://i.kym-cdn.com/entries/icons/facebook/000/021/703/thumbs_up_emoji_meme_banner.jpg"
+                width="200" alt="Image of an thumbs up emoticon">
+            <img src="https://i.kym-cdn.com/entries/icons/facebook/000/021/703/thumbs_up_emoji_meme_banner.jpg"
+                width="200" alt="Image of an thumbs up emoticon">
+
+            <h2>Subscriber to my newsletter</h2>
+            <form>
+                <label for="subscribe-form-email">
+                    Email
+                    <span class="warning" style="display: none;" id="subscriber-warning">
+                        [Email is required]
+                    </span>
+                </label>
+                <input type="email" name="email" id="subscribe-form-email" required>
+                <input type="submit" value="Submit!" formaction="https://www.w3schools.com/action_page.php"
+                    id="subscribe-form-submit">
+            </form>
+        </aside>
+    </div>
+
+
+</body>
+
+</html>
